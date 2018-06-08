@@ -109,6 +109,7 @@ router.route('/purchases/recent/:time_period')
 
   .get((req, res) => {
     const today = new Date();
+    const { time_period } = req.params;
     let date;
 
     if (time_period === 'week') {
@@ -119,7 +120,7 @@ router.route('/purchases/recent/:time_period')
       date = new Date(today.getFullYear(), 0, 1);
     }
 
-    Purchase.find({ date: { $gte: cutOffDate }}, (err, purchases) => {
+    Purchase.find({ date: { $gte: date }}, (err, purchases) => {
       if (err) {
         res.send(err);
       }
