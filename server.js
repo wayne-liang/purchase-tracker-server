@@ -78,16 +78,10 @@ router.route('/purchases/:purchase_id')
 router.route('/purchases/thisweek')
 
   .get((req, res) => {
-    const pastMonday = new Date();
-    pastMonday.setDate(pastMonday.getDate() - (pastMonday.getDay() + 6) % 7);
+    const today = new Date();
+    const pastMonday = new Date(today.getFullYear(), today.getMonth(), today.getDate() - (today.getDay() + 6) % 7);
 
-    const pastMondayWithoutTime = new Date(
-      pastMonday.getFullYear(),
-      pastMonday.getMonth(),
-      pastMonday.getDate()
-    );
-
-    Purchase.find({ date: { $gte: pastMondayWithoutTime }}, (err, purchases) => {
+    Purchase.find({ date: { $gte: pastMonday }}, (err, purchases) => {
       if (err) {
         res.send(err);
       }
@@ -103,6 +97,21 @@ router.route('/purchases/thismonth')
     const thisMonth = new Date(today.getFullYear(), today.getMonth(), 1);
 
     Purchase.find({ date: { $gte: thisMonth }}, (err, purchases) => {
+      if (err) {
+        res.send(err);
+      }
+
+      res.json(purchases);
+    });
+  });
+
+router.route('/purchases/recent/:days')
+
+  .get((req, res) => {
+    const today = new Date();
+    const cutOffDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() - req.params.days);
+
+    Purchase.find({ date: { $gte: cutOffDate }}, (err, purchases) => {
       if (err) {
         res.send(err);
       }
