@@ -109,7 +109,7 @@ router.route('/purchases/recent/:time_period')
 
   .get((req, res) => {
     const today = new Date();
-    const date;
+    let date;
 
     if (time_period === 'week') {
       date = new Date(today.getFullYear(), today.getMonth(), today.getDate() - (today.getDay() + 6) % 7);
