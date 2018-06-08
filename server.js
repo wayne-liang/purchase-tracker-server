@@ -105,11 +105,19 @@ router.route('/purchases/thismonth')
     });
   });
 
-router.route('/purchases/recent/:days')
+router.route('/purchases/recent/:time_period')
 
   .get((req, res) => {
     const today = new Date();
-    const cutOffDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() - req.params.days);
+    const date;
+
+    if (time_period === 'week') {
+      date = new Date(today.getFullYear(), today.getMonth(), today.getDate() - (today.getDay() + 6) % 7);
+    } else if (time_period === 'month') {
+      date = new Date(today.getFullYear(), today.getMonth(), 1);
+    } else if (time_period === 'year') {
+      date = new Date(today.getFullYear(), 0, 1);
+    }
 
     Purchase.find({ date: { $gte: cutOffDate }}, (err, purchases) => {
       if (err) {
